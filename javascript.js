@@ -1,7 +1,6 @@
 
-function add(){
+function add(numbers){
 
-let numbers = Array.from(arguments);
 let total = 0;
 
     numbers.forEach(num => {
@@ -11,9 +10,8 @@ let total = 0;
     return total;
 }
 
-function subtract(){
+function subtract(numbers){
 
-let numbers = Array.from(arguments);
 let total = numbers[0];
 
     for(let i=1;i<numbers.length;i++){
@@ -23,9 +21,8 @@ let total = numbers[0];
     return total;
 }
 
-function multiply(){
+function multiply(numbers){
 
-let numbers = Array.from(arguments);
 let total = numbers[0];
 
     for(let i=1;i<numbers.length;i++){
@@ -35,9 +32,8 @@ let total = numbers[0];
     return total;
 }
 
-function divide(){
+function divide(numbers){
 
-let numbers = Array.from(arguments);
 let total = numbers[0];
 
     for(let i=1;i<numbers.length;i++){
@@ -47,7 +43,30 @@ let total = numbers[0];
     return total;
 }
 
-console.log(divide(8,3,2))
+function operate (operator,...numbers) {
+
+    let result = 0;
+
+    switch (operator) {
+        case '+':
+            result = add(numbers);
+            break;
+        case '-':
+            result = subtract(numbers);
+            break;
+        case '*':
+            result = multiply(numbers);
+            break;
+        case '/':
+            result = divide(numbers);
+            break;
+    }
+
+    return result;
+
+}
+
+console.log(operate('+',6,2,2));
 
 
 
