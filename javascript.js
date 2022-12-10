@@ -1,3 +1,25 @@
+const digitBtns = document.querySelectorAll(".digit-btn");
+const display = document.querySelector(".display");
+
+
+
+digitBtns.forEach(button => { button.addEventListener("click",updateDisplay)
+    
+});
+
+function updateDisplay(e){
+
+    console.log(e.target.classList);
+
+    if(display.textContent==="0"){
+        display.textContent="";
+    }
+  display.textContent += e.target.textContent;
+  
+
+}
+
+/* BASIC MATH FUNCTIONS */
 
 function add(numbers){
 
