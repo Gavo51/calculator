@@ -2,6 +2,8 @@ const digitBtns = document.querySelectorAll(".digit-btn");
 const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
+let numArray = [];
+
 /*Add event listener for all buttons the container*/
 
 btnContainer.addEventListener("click", (event) => {
@@ -13,8 +15,11 @@ btnContainer.addEventListener("click", (event) => {
         case "digit-btn":
             updateDisplay(event);
             break;
-        
-      
+
+        case "operator-btn":
+            updateDisplay(event);
+            saveNumber(display.textContent);
+            break;
        }
      
 
@@ -28,9 +33,11 @@ btnContainer.addEventListener("click", (event) => {
 
 
 
-/*digitBtns.forEach(button => { button.addEventListener("click",updateDisplay)
-    
-});*/
+function saveNumber (num) {
+    numArray.shift();
+    numArray.push(num);
+    console.log(numArray);
+}
 
 function updateDisplay(e){
 
