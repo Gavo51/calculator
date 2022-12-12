@@ -1,15 +1,38 @@
 const digitBtns = document.querySelectorAll(".digit-btn");
 const display = document.querySelector(".display");
+const btnContainer = document.querySelector(".btn-container");
 
+/*Add event listener for all buttons the container*/
 
-
-digitBtns.forEach(button => { button.addEventListener("click",updateDisplay)
+btnContainer.addEventListener("click", (event) => {
     
-});
+    for(let button of event.target.classList){
+        
+       switch(button){
+
+        case "digit-btn":
+            updateDisplay(event);
+            break;
+        
+      
+       }
+     
+
+        
+
+    }
+
+
+
+})
+
+
+
+/*digitBtns.forEach(button => { button.addEventListener("click",updateDisplay)
+    
+});*/
 
 function updateDisplay(e){
-
-    console.log(e.target.classList);
 
     if(display.textContent==="0"){
         display.textContent="";
