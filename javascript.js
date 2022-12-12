@@ -2,7 +2,8 @@ const digitBtns = document.querySelectorAll(".digit-btn");
 const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
-let numArray = [];
+let storedDigits = [];
+let finalValues = [];
 
 /*Add event listener for all buttons the container*/
 
@@ -14,11 +15,19 @@ btnContainer.addEventListener("click", (event) => {
 
         case "digit-btn":
             updateDisplay(event);
+            storeNumber(event.target.textContent);
             break;
 
-        case "operator-btn":
+        case "operator-btn":            
             updateDisplay(event);
-            saveNumber(display.textContent);
+            finalValues.push(storedDigits.join(""));
+            storedDigits = [];
+            finalValues.push(event.target.textContent);
+            console.log(finalValues);
+            break;
+
+        case "equal-btn":
+            operate();
             break;
        }
      
@@ -31,13 +40,15 @@ btnContainer.addEventListener("click", (event) => {
 
 })
 
+/* STORE THE NUMBERS */
 
-
-function saveNumber (num) {
-    numArray.shift();
-    numArray.push(num);
-    console.log(numArray);
+function storeNumber (currentNum) {
+   storedDigits.push(currentNum);
+   console.log(storedDigits)
+  
 }
+
+/* UPDATE THE DISPLAY */
 
 function updateDisplay(e){
 
@@ -95,10 +106,18 @@ let total = numbers[0];
     return total;
 }
 
-function operate (operator,...numbers) {
+function operate (storedValues) {
+
+    
+    console.log(storedValues);
+   
+
+
 
     let result = 0;
 
+
+/*
     switch (operator) {
         case '+':
             result = add(numbers);
@@ -113,12 +132,13 @@ function operate (operator,...numbers) {
             result = divide(numbers);
             break;
     }
+*/
 
     return result;
 
 }
 
-console.log(operate('+',6,2,2));
+
 
 
 
