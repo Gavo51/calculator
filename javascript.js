@@ -3,30 +3,34 @@ const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
 let storedDigits = [];
-let finalValues = [];
+let storedValues = [];
 
 /*Add event listener for all buttons the container*/
 
 btnContainer.addEventListener("click", (event) => {
     
-    for(let button of event.target.classList){
+    for(let buttonType of event.target.classList){
         
-       switch(button){
+       switch(buttonType){
 
         case "digit-btn":
             updateDisplay(event);
             storeNumber(event.target.textContent);
+            console.log(storedDigits)
             break;
 
         case "operator-btn":            
             updateDisplay(event);
-            finalValues.push(storedDigits.join(""));
+            storedValues.push(storedDigits.join(""));
             storedDigits = [];
-            finalValues.push(event.target.textContent);
-            console.log(finalValues);
+            storedValues.push(event.target.textContent);
+            console.log(storedValues)
             break;
 
         case "equal-btn":
+            storedValues.push(storedDigits.join(""));
+            storedDigits = [];
+            console.log(storedDigits)
             operate();
             break;
        }
@@ -44,7 +48,6 @@ btnContainer.addEventListener("click", (event) => {
 
 function storeNumber (currentNum) {
    storedDigits.push(currentNum);
-   console.log(storedDigits)
   
 }
 
@@ -52,9 +55,7 @@ function storeNumber (currentNum) {
 
 function updateDisplay(e){
 
-    if(display.textContent==="0"){
-        display.textContent="";
-    }
+   
   display.textContent += e.target.textContent;
   
 
@@ -62,60 +63,88 @@ function updateDisplay(e){
 
 /* BASIC MATH FUNCTIONS */
 
-function add(numbers){
+function add(){
 
-let total = 0;
+let result = 0;
+ 
+    result = +storedValues[0] + +storedValues[2];
+    storedValues.splice(0,3);
+    storedValues.unshift(result);
 
-    numbers.forEach(num => {
-        total += num;
-    });
-
-    return total;
+    return;
 }
 
-function subtract(numbers){
+function subtract(){
 
-let total = numbers[0];
+let result = 0;
 
-    for(let i=1;i<numbers.length;i++){
-        total -= numbers[i];
+    result = +storedValues[0] - +storedValues[2];
+    storedValues.splice(0,3);
+    storedValues.unshift(result);
+
+    return;
+}
+
+function multiply(){
+
+let result = 0;
+
+    result = +storedValues[0] * +storedValues[2];
+    storedValues.splice(0,3);
+    storedValues.unshift(result);
+
+    return;
+}
+
+function divide(){
+
+let result = 0;
+
+    result = +storedValues[0] / +storedValues[2];
+    storedValues.splice(0,3);
+    storedValues.unshift(result);
+
+    return;
+}
+
+function operate () {
+
+    console.log(storedValues);
+
+
+
+    while (storedValues.length>1){
+
+        switch(storedValues[1]){
+            case '+':
+                add();           
+            break;
+
+            case '-':
+                subtract();           
+            break;
+
+            case '*':
+                multiply();           
+            break;
+
+            case '/':
+                divide();           
+            break;
+        }
+
+        console.log(storedValues);
+        
     }
 
-    return total;
-}
+    display.textContent = storedValues;
 
-function multiply(numbers){
-
-let total = numbers[0];
-
-    for(let i=1;i<numbers.length;i++){
-        total *= numbers[i];
-    }
-
-    return total;
-}
-
-function divide(numbers){
-
-let total = numbers[0];
-
-    for(let i=1;i<numbers.length;i++){
-        total /= numbers[i];
-    }
-
-    return total;
-}
-
-function operate (storedValues) {
+    storedDigits = [];
+    storedValues = [];
 
     
-    console.log(storedValues);
-   
-
-
-
-    let result = 0;
-
+        
+        
 
 /*
     switch (operator) {
@@ -134,7 +163,7 @@ function operate (storedValues) {
     }
 */
 
-    return result;
+    return ;
 
 }
 
