@@ -1,9 +1,9 @@
-const digitBtns = document.querySelectorAll(".digit-btn");
 const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
-let storedDigits = [];
-let storedValues = [];
+
+let storedValues = "";
+let valuesArray = [];
 
 /*Add event listener for all buttons the container*/
 
@@ -15,23 +15,22 @@ btnContainer.addEventListener("click", (event) => {
 
         case "digit-btn":
             updateDisplay(event);
-            storeNumber(event.target.textContent);
-            console.log(storedDigits)
+            storedValues += event.target.textContent; // concat the content of the current button into storedValues string
+            console.log(storedValues);
             break;
 
         case "operator-btn":            
             updateDisplay(event);
-            storedValues.push(storedDigits.join(""));
-            storedDigits = [];
-            storedValues.push(event.target.textContent);
-            console.log(storedValues)
+            storedValues += " " + event.target.textContent + " "; 
+            console.log(storedValues);
             break;
 
         case "equal-btn":
-            storedValues.push(storedDigits.join(""));
-            storedDigits = [];
-            console.log(storedDigits)
             operate();
+            break;
+
+        case "clear-btn":
+            restore();
             break;
        }
      
@@ -44,124 +43,92 @@ btnContainer.addEventListener("click", (event) => {
 
 })
 
-/* STORE THE NUMBERS */
-
-function storeNumber (currentNum) {
-   storedDigits.push(currentNum);
-  
-}
 
 /* UPDATE THE DISPLAY */
 
 function updateDisplay(e){
-
    
-  display.textContent += e.target.textContent;
-  
+  display.textContent += e.target.textContent;  
+
+}
+
+//clears everything
+function restore (){
+
+    display.textContent = "";
+    storedValues = "";
+    valuesArray = [];
 
 }
 
 /* BASIC MATH FUNCTIONS */
 
-function add(){
-
-let result = 0;
+function add(array){
  
-    result = +storedValues[0] + +storedValues[2];
-    storedValues.splice(0,3);
-    storedValues.unshift(result);
-
-    return;
+   return  +array[0] + +array[2];
+   
 }
 
-function subtract(){
+function subtract(array){
 
-let result = 0;
+    return +array[0] - +array[2];   
 
-    result = +storedValues[0] - +storedValues[2];
-    storedValues.splice(0,3);
-    storedValues.unshift(result);
-
-    return;
 }
 
-function multiply(){
+function multiply(array){
 
-let result = 0;
-
-    result = +storedValues[0] * +storedValues[2];
-    storedValues.splice(0,3);
-    storedValues.unshift(result);
-
-    return;
+    return +array[0] * +array[2];
+   
 }
 
-function divide(){
+function divide(array){
 
-let result = 0;
+    return +array[0] / +array[2];
 
-    result = +storedValues[0] / +storedValues[2];
-    storedValues.splice(0,3);
-    storedValues.unshift(result);
+}
+
+function operateArray (array,result) { 
+// takes valuesArray and a operation function as arguments, then modify valuesArray 
+  
+    array.splice(0,3);
+    array.unshift(result);
 
     return;
+
 }
 
 function operate () {
 
-    console.log(storedValues);
+    // turn the string into an array separated by spaces
+    valuesArray = storedValues.split(" "); 
+    console.log(valuesArray);
 
+    while (valuesArray.length>1){
 
-
-    while (storedValues.length>1){
-
-        switch(storedValues[1]){
+        switch(valuesArray[1]){
             case '+':
-                add();           
+                operateArray(valuesArray,add(valuesArray))           
             break;
 
             case '-':
-                subtract();           
+                operateArray(valuesArray,subtract(valuesArray))           
             break;
 
-            case '*':
-                multiply();           
+            case 'x':
+                operateArray(valuesArray,multiply(valuesArray))           
             break;
 
             case '/':
-                divide();           
+                operateArray(valuesArray,divide(valuesArray))           
             break;
         }
 
-        console.log(storedValues);
+        console.log(valuesArray);
         
     }
 
-    display.textContent = storedValues;
-
-    storedDigits = [];
-    storedValues = [];
-
-    
-        
-        
-
-/*
-    switch (operator) {
-        case '+':
-            result = add(numbers);
-            break;
-        case '-':
-            result = subtract(numbers);
-            break;
-        case '*':
-            result = multiply(numbers);
-            break;
-        case '/':
-            result = divide(numbers);
-            break;
-    }
-*/
+    storedValues = valuesArray[0];
+    display.textContent = valuesArray;
 
     return ;
 
