@@ -14,9 +14,15 @@ btnContainer.addEventListener("click", (event) => {
        switch(buttonType){
 
         case "digit-btn":
+
+            console.log(checkContinuity());
+            if(checkContinuity()===true){ // checks if the operate function was already called
+                restore();               
+            }
+
             updateDisplay(event);
             storedValues += event.target.textContent; // concat the content of the current button into storedValues string
-            console.log(storedValues);
+           
             break;
 
         case "operator-btn":            
@@ -43,16 +49,26 @@ btnContainer.addEventListener("click", (event) => {
 
 })
 
-
-/* UPDATE THE DISPLAY */
-
+// Updates the disppay
 function updateDisplay(e){
    
   display.textContent += e.target.textContent;  
 
 }
 
-//clears everything
+
+// Check if valuesArray already contains the result of an operation
+function checkContinuity(){
+
+    if(valuesArray[0]!=undefined){
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+//Clears everything
 function restore (){
 
     display.textContent = "";
@@ -88,9 +104,9 @@ function divide(array){
 }
 
 function operateArray (array,result) { 
-// takes valuesArray and a operation function as arguments, then modify valuesArray 
+
   
-    array.splice(0,3);
+    array.splice(0,3);   // takes valuesArray and a operation function as arguments, then modify valuesArray 
     array.unshift(result);
 
     return;
