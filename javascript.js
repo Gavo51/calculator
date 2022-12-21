@@ -4,6 +4,7 @@ const btnContainer = document.querySelector(".btn-container");
 
 let storedValues = "";
 let valuesArray = [];
+let operated = 0; // flag variable to check if operate() has been called
 
 /*Add event listener for all buttons the container*/
 
@@ -15,17 +16,18 @@ btnContainer.addEventListener("click", (event) => {
 
         case "digit-btn":
 
-            console.log(checkContinuity());
-            if(checkContinuity()===true){ // checks if the operate function was already called
-                restore();               
+            if(operated == 1){ // checking if operate() has been called
+                restore();
+                operated = 0;
             }
 
             updateDisplay(event);
             storedValues += event.target.textContent; // concat the content of the current button into storedValues string
-           
+            console.log(storedValues);
             break;
 
-        case "operator-btn":            
+        case "operator-btn":              
+            operated = 0; 
             updateDisplay(event);
             storedValues += " " + event.target.textContent + " "; 
             console.log(storedValues);
@@ -56,17 +58,7 @@ function updateDisplay(e){
 
 }
 
-
-// Check if valuesArray already contains the result of an operation
-function checkContinuity(){
-
-    if(valuesArray[0]!=undefined){
-        return true;
-    } else {
-        return false;
-    }
-
-}
+// checks if operate() has been called
 
 //Clears everything
 function restore (){
@@ -144,7 +136,8 @@ function operate () {
     }
 
     storedValues = valuesArray[0];
-    display.textContent = valuesArray;
+    display.textContent = storedValues;
+    continuityCheck = 1;
 
     return ;
 
