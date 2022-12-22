@@ -41,10 +41,6 @@ btnContainer.addEventListener("click", (event) => {
             restore();
             break;
        }
-     
-
-        
-
     }
 
 
@@ -109,7 +105,6 @@ function operate () {
 
     // turn the string into an array separated by spaces
     valuesArray = storedValues.split(" "); 
-    console.log(valuesArray);
 
     while (valuesArray.length>1){
 
@@ -135,13 +130,19 @@ function operate () {
         
     }
 
-    storedValues = valuesArray[0];
+    storedValues = valuesArray[0].toString();
     display.textContent = storedValues;
-    continuityCheck = 1;
+    operated = 1;
+
+    console.log(valuesArray);
+    console.log(`storedvalues equals to = ${storedValues} and is a ${typeof(storedValues)}`);
 
     return ;
 
 }
+
+
+
 
 
 
