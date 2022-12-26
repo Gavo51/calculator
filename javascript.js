@@ -6,7 +6,41 @@ let storedValues = "";
 let valuesArray = [];
 let operated = 0; // flag variable to check if operate() has been called
 
-/*Add event listener for all buttons the container*/
+
+/*Add event listener for keyboard inputs*/
+
+window.addEventListener("keydown",function(e){
+
+   if(e.key>=0 || e.key<=9){
+
+    if(operated == 1){ // checking if operate() has been called
+        restore();
+        operated = 0;
+    }
+
+    updateDisplay(e.key);
+    storedValues += e.key;
+   }
+
+   if(e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/'){
+    operated = 0;
+    updateDisplay(e.key);
+    storedValues += " " + e.key + " ";
+   }
+
+    if(e.key === 'Enter'){
+        operate();
+    } 
+
+    if(e.key === ',' || e.key === '.') {
+        updateDisplay('.');
+        storedValues += '.';
+    }
+
+});
+
+
+/*Add click event  listener for all buttons the container*/
 
 btnContainer.addEventListener("click", (event) => {
     
@@ -21,16 +55,14 @@ btnContainer.addEventListener("click", (event) => {
                 operated = 0;
             }
 
-            updateDisplay(event);
+            updateDisplay(event.target.textContent);
             storedValues += event.target.textContent; // concat the content of the current button into storedValues string
-            console.log(storedValues);
             break;
 
         case "operator-btn":              
             operated = 0; 
-            updateDisplay(event);
+            updateDisplay(event.target.textContent);
             storedValues += " " + event.target.textContent + " "; 
-            console.log(storedValues);
             break;
 
         case "equal-btn":
@@ -48,9 +80,10 @@ btnContainer.addEventListener("click", (event) => {
 })
 
 // Updates the disppay
-function updateDisplay(e){
-   
-  display.textContent += e.target.textContent;  
+function updateDisplay(key){
+  
+    console.log(typeof(key));
+  display.textContent += key;  
 
 }
 
@@ -105,6 +138,7 @@ function operate () {
 
     // turn the string into an array separated by spaces
     valuesArray = storedValues.split(" "); 
+    console.log(valuesArray);
 
     while (valuesArray.length>1){
 
@@ -125,17 +159,15 @@ function operate () {
                 operateArray(valuesArray,divide(valuesArray))           
             break;
         }
-
-        console.log(valuesArray);
         
+        console.log(valuesArray)
     }
 
     storedValues = valuesArray[0].toString();
     display.textContent = storedValues;
+    console.log('the display contains = '+display.textContent);
     operated = 1;
 
-    console.log(valuesArray);
-    console.log(`storedvalues equals to = ${storedValues} and is a ${typeof(storedValues)}`);
 
     return ;
 
