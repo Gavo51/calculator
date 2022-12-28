@@ -2,8 +2,8 @@ const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
 
-let storedValues = "";
-let valuesArray = [];
+let storedValues = [];
+let currentValue = "";
 let operated = 0; // flag variable to check if operate() has been called
 
 
@@ -11,30 +11,41 @@ let operated = 0; // flag variable to check if operate() has been called
 
 window.addEventListener("keydown",function(e){
 
-   if(e.key>=0 || e.key<=9){
+let key = e.key;
 
-    if(operated == 1){ // checking if operate() has been called
-        restore();
-        operated = 0;
+    if(key >= 0 || key <= 9 || key === '.' || key === ','){
+
+            if(operated == 1){ // checking if operate() has been called
+                restore();
+                operated = 0;
+            }
+
+            if(key === ','){
+                key = '.';
+            }
+
+        
+        storeValue(key);
+        updateDisplay();
+   
     }
 
-    updateDisplay(e.key);
-    storedValues += e.key;
-   }
+    if(key === '+' || key === '-' || key === '*' || key === '/'){
 
-   if(e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/'){
-    operated = 0;
-    updateDisplay(e.key);
-    storedValues += " " + e.key + " ";
-   }
+        operated = 0;
+                
+        storeValue(key); // stores the operator key on a different index at storedValues
+        updateDisplay();
 
-    if(e.key === 'Enter'){
+    }
+
+    if(key === 'Enter'){
         operate();
     } 
 
-    if(e.key === ',' || e.key === '.') {
-        updateDisplay('.');
-        storedValues += '.';
+
+    if(key === 'Backspace') {
+        deleteNum();
     }
 
 });
@@ -80,17 +91,30 @@ btnContainer.addEventListener("click", (event) => {
 })
 
 // Updates the disppay
-function updateDisplay(key){
-  
-    console.log(typeof(key));
-  display.textContent += key;  
+function updateDisplay(){
+
+  display.textContent = storedValues.join('');  
 
 }
 
-// checks if operate() has been called
+function storeValue (value) {
+    storedValues.push(value);
+    console.log(storedValues);
+}
+
+function  deleteNum () {
+
+    storedValues.pop();
+    display.textContent = display.textContent.slice(display.textContent.length-1);
+
+    console.log(storedValues);
+    console.log(display.textContent);
+
+   
+}
 
 //Clears everything
-function restore (){
+function restore () {
 
     display.textContent = "";
     storedValues = "";
@@ -136,10 +160,14 @@ function operateArray (array,result) {
 
 function operate () {
 
-    // turn the string into an array separated by spaces
-    valuesArray = storedValues.split(" "); 
-    console.log(valuesArray);
 
+   let jointArray = storedValues.map( function (value){
+        return value;
+   });
+
+   console.log(jointArray);
+
+/*
     while (valuesArray.length>1){
 
         switch(valuesArray[1]){
@@ -168,10 +196,12 @@ function operate () {
     console.log('the display contains = '+display.textContent);
     operated = 1;
 
-
+*/
     return ;
 
 }
+
+
 
 
 
