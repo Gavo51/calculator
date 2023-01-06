@@ -58,28 +58,43 @@ btnContainer.addEventListener("click", (event) => {
 
         case "digit-btn":
 
-            if(triggerRefresh == 1){ // checking if operate() has been called
+            if(triggerRefresh == true){ 
                 restoreData();
-                triggerRefresh = 0;
+                triggerRefresh = false;
             }
 
-            updateDisplay(event.target.textContent);
-            storedValues += event.target.textContent; // concat the content of the current button into storedValues string
+            storeValue(event.target.textContent)
+            updateDisplay();
+            blockOperator = false;
+            
             break;
 
-        case "operator-btn":              
-            triggerRefresh = 0; 
-            updateDisplay(event.target.textContent);
-            storedValues += " " + event.target.textContent + " "; 
+        case "operator-btn":   
+
+            triggerRefresh = false;
+
+            if(!blockOperator) {
+            storeValue(event.target.textContent); 
+            blockOperator = true;
+            } 
+
             break;
 
         case "equal-btn":
+
             operate();
             break;
 
         case "clear-btn":
+
             restoreData();
             break;
+        
+        case "delete-btn":
+
+            deleteValue();
+            break;
+
        }
     }
 
@@ -101,7 +116,7 @@ function storeValue (value) {
     
 }
 
-function  deleteValue () {
+function deleteValue () {
 
     storedValues.pop();
     updateDisplay();
@@ -128,7 +143,7 @@ function validateKey(input) {
 
 }
 
-function operateArray (array,result) { 
+function reduceData (array,result) { 
 
     array.splice(0,3);   // takes storedValues and a operation function as arguments, then modify storedValues 
     array.unshift(result.toString());
@@ -150,31 +165,32 @@ function organizeData () {
 
 function operate () {
 
-let finalDataArray = organizeData();
+// Array that contains all the data with separated numbers and operators
+let finalData = organizeData();
 
-console.log(finalDataArray);
+console.log(finalData);
 
-while(finalDataArray.length>1){
+while(finalData.length>1){
 
-    switch(finalDataArray[1]){
+    switch(finalData[1]){
         case '+':
-            operateArray(finalDataArray,+finalDataArray[0] + +finalDataArray[2]);
+            reduceData(finalData,+finalData[0] + +finalData[2]);
         break;
 
         case '-':
-            operateArray(finalDataArray,+finalDataArray[0] - +finalDataArray[2]);          
+            reduceData(finalData,+finalData[0] - +finalData[2]);          
         break;
 
         case '*':
-            operateArray(finalDataArray,+finalDataArray[0] * +finalDataArray[2]);          
+            reduceData(finalData,+finalData[0] * +finalData[2]);          
         break;
 
         case '/':
-            operateArray(finalDataArray,+finalDataArray[0] / +finalDataArray[2]);         
+            reduceData(finalData,+finalData[0] / +finalData[2]);         
         break;
     }
 
-    storedValues = finalDataArray.toString();
+    storedValues = finalData.toString();
     updateDisplay();
     triggerRefresh = true;
        
