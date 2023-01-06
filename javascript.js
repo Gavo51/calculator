@@ -118,7 +118,7 @@ function storeValue (value) {
 
 function deleteValue () {
 
-    storedValues.pop();
+    storedValues = storedValues.slice(0,storedValues.length-1);
     updateDisplay();
 
 }
