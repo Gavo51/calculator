@@ -2,57 +2,54 @@ const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
 
-let storedValues = [];
-let currentValue = "";
-let operated = 0; // flag variable to check if operate() has been called
+let storedValues = "";
 
+
+let triggerRefresh = false;         // flag variable to check if operate() has been called
+let blockOperator = false;       // flag variable to check if an operator has been inputted
 
 /*Add event listener for keyboard inputs*/
 
-window.addEventListener("keydown",function(e){
+window.addEventListener("keydown",function(event) {
 
-let key = e.key;
+let key = event.key;
 
-    if(key >= 0 || key <= 9 || key === '.' || key === ','){
-
-            if(operated == 1){ // checking if operate() has been called
-                restore();
-                operated = 0;
-            }
-
-            if(key === ','){
-                key = '.';
-            }
-
+    if(key >= 0 || key <= 9 || key == '.' || key == ','){
         
-        storeValue(key);
-        updateDisplay();
-   
+        // checking if operate() has been called
+        if(triggerRefresh){ 
+            restoreData();
+            triggerRefresh = false;
+        }
+      
+        key = validateKey(key);
+        storeValue(key);       
+        blockOperator = false;        
     }
 
-    if(key === '+' || key === '-' || key === '*' || key === '/'){
+    if(key == '+' || key == '-' || key == '*' || key == '/'){
 
-        operated = 0;
-                
-        storeValue(key); // stores the operator key on a different index at storedValues
-        updateDisplay();
+        triggerRefresh = false;
 
+         // check if an operator key has been pressed twice
+        if(!blockOperator) {
+            storeValue(key); 
+            blockOperator = true;
+        }       
     }
 
     if(key === 'Enter'){
         operate();
     } 
 
-
     if(key === 'Backspace') {
-        deleteNum();
+        deleteValue();
     }
 
 });
 
 
 /*Add click event  listener for all buttons the container*/
-
 btnContainer.addEventListener("click", (event) => {
     
     for(let buttonType of event.target.classList){
@@ -61,9 +58,9 @@ btnContainer.addEventListener("click", (event) => {
 
         case "digit-btn":
 
-            if(operated == 1){ // checking if operate() has been called
-                restore();
-                operated = 0;
+            if(triggerRefresh == 1){ // checking if operate() has been called
+                restoreData();
+                triggerRefresh = 0;
             }
 
             updateDisplay(event.target.textContent);
@@ -71,7 +68,7 @@ btnContainer.addEventListener("click", (event) => {
             break;
 
         case "operator-btn":              
-            operated = 0; 
+            triggerRefresh = 0; 
             updateDisplay(event.target.textContent);
             storedValues += " " + event.target.textContent + " "; 
             break;
@@ -81,7 +78,7 @@ btnContainer.addEventListener("click", (event) => {
             break;
 
         case "clear-btn":
-            restore();
+            restoreData();
             break;
        }
     }
@@ -93,110 +90,98 @@ btnContainer.addEventListener("click", (event) => {
 // Updates the disppay
 function updateDisplay(){
 
-  display.textContent = storedValues.join('');  
+  display.textContent = storedValues;  
 
 }
 
 function storeValue (value) {
-    storedValues.push(value);
-    console.log(storedValues);
+
+    storedValues += value;
+    updateDisplay();
+    
 }
 
-function  deleteNum () {
+function  deleteValue () {
 
     storedValues.pop();
-    display.textContent = display.textContent.slice(display.textContent.length-1);
+    updateDisplay();
 
-    console.log(storedValues);
-    console.log(display.textContent);
-
-   
 }
 
 //Clears everything
-function restore () {
+function restoreData() {
 
     display.textContent = "";
     storedValues = "";
-    valuesArray = [];
 
 }
 
-/* BASIC MATH FUNCTIONS */
+function validateKey(input) {
 
-function add(array){
- 
-   return  +array[0] + +array[2];
-   
-}
-
-function subtract(array){
-
-    return +array[0] - +array[2];   
-
-}
-
-function multiply(array){
-
-    return +array[0] * +array[2];
-   
-}
-
-function divide(array){
-
-    return +array[0] / +array[2];
+    if(input === ','){
+        return '.';
+    }else if(input === 'x'){
+        return '*';
+    }else{
+        return input;
+    }
 
 }
 
 function operateArray (array,result) { 
 
-  
-    array.splice(0,3);   // takes valuesArray and a operation function as arguments, then modify valuesArray 
-    array.unshift(result);
+    array.splice(0,3);   // takes storedValues and a operation function as arguments, then modify storedValues 
+    array.unshift(result.toString());
 
     return;
 
 }
 
+// takes the storedValues string and splits it into an array, separating numbers and operators
+function organizeData () {
+
+    let operators = {'+':'|+|','-':'|-|','*':'|*|','/':'|/|'};
+
+    storedValues = storedValues.replace(/[+\-\*\/]/g, op => operators[op]);
+
+    return storedValues.split('|');
+
+}
+
 function operate () {
 
+let finalDataArray = organizeData();
 
-   let jointArray = storedValues.map( function (value){
-        return value;
-   });
+console.log(finalDataArray);
 
-   console.log(jointArray);
+while(finalDataArray.length>1){
 
-/*
-    while (valuesArray.length>1){
+    switch(finalDataArray[1]){
+        case '+':
+            operateArray(finalDataArray,+finalDataArray[0] + +finalDataArray[2]);
+        break;
 
-        switch(valuesArray[1]){
-            case '+':
-                operateArray(valuesArray,add(valuesArray))           
-            break;
+        case '-':
+            operateArray(finalDataArray,+finalDataArray[0] - +finalDataArray[2]);          
+        break;
 
-            case '-':
-                operateArray(valuesArray,subtract(valuesArray))           
-            break;
+        case '*':
+            operateArray(finalDataArray,+finalDataArray[0] * +finalDataArray[2]);          
+        break;
 
-            case 'x':
-                operateArray(valuesArray,multiply(valuesArray))           
-            break;
-
-            case '/':
-                operateArray(valuesArray,divide(valuesArray))           
-            break;
-        }
-        
-        console.log(valuesArray)
+        case '/':
+            operateArray(finalDataArray,+finalDataArray[0] / +finalDataArray[2]);         
+        break;
     }
 
-    storedValues = valuesArray[0].toString();
-    display.textContent = storedValues;
-    console.log('the display contains = '+display.textContent);
-    operated = 1;
+    storedValues = finalDataArray.toString();
+    updateDisplay();
+    triggerRefresh = true;
+       
+};
 
-*/
+
+
     return ;
 
 }
