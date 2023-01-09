@@ -3,54 +3,81 @@ const btnContainer = document.querySelector(".btn-container");
 
 
 let storedValues = "";
+let operatorList = "+-*/";
 
 
 let triggerRefresh = false;         // flag variable to check if operate() has been called
-let blockOperator = false;       // flag variable to check if an operator has been inputted
+let disableOperators = false;       // flag variable to check if an operator has been inputted
 
-/*Add event listener for keyboard inputs*/
+/*Add event listener for userInputboard inputs*/
 
 window.addEventListener("keydown",function(event) {
 
-let key = event.key;
+let userInput = event.key;
 
-    if(key >= 0 || key <= 9 || key == '.' || key == ','){
+    if(userInput >= 0 || userInput <= 9){
         
         // checking if operate() has been called
         if(triggerRefresh){ 
             restoreData();
             triggerRefresh = false;
         }
-      
-        key = validateKey(key);
-        storeValue(key);       
-        blockOperator = false;        
+ 
+        storeValue(userInput);       
+        disableOperators = false;        
     }
 
-    if(key == '+' || key == '-' || key == '*' || key == '/'){
+    if(userInput == '.' || userInput == ','){
+        
+        if(triggerRefresh){ 
+            restoreData();
+            triggerRefresh = false;
+        }
+
+        if(storedValues == ''){
+            storeValue('0.');
+        } else {
+            storeValue('.');  
+        }
+        
+        disableOperators = false;        
+    }
+
+    if('+-/*'.includes(userInput)){
 
         triggerRefresh = false;
 
-         // check if an operator key has been pressed twice
-        if(!blockOperator) {
-            storeValue(key); 
-            blockOperator = true;
+         // check if an operator userInput has been pressed twice
+        if(!disableOperators) {
+
+            if(userInput == '*'){
+                storeValue('x');
+            } else {
+            storeValue(userInput); 
+            }
+
+        disableOperators = true;
+
         }       
     }
 
-    if(key === 'Enter'){
+    if(userInput === 'Enter'){
         operate();
     } 
 
-    if(key === 'Backspace') {
+    if(userInput === 'Backspace') {
         deleteValue();
     }
+
+
 
 });
 
 
 /*Add click event  listener for all buttons the container*/
 btnContainer.addEventListener("click", (event) => {
+
+let userInput="";
     
     for(let buttonType of event.target.classList){
         
@@ -63,19 +90,21 @@ btnContainer.addEventListener("click", (event) => {
                 triggerRefresh = false;
             }
 
-            storeValue(event.target.textContent)
+            userInput = event.target.textContent;
+            storeValue(userInput);
             updateDisplay();
-            blockOperator = false;
+            disableOperators = false;
             
             break;
 
         case "operator-btn":   
 
+            userInput = validateuserInput(event.target.textContent);
             triggerRefresh = false;
 
-            if(!blockOperator) {
-            storeValue(event.target.textContent); 
-            blockOperator = true;
+            if(!disableOperators) {
+                storeValue(userInput); 
+                disableOperators = true;
             } 
 
             break;
@@ -131,12 +160,10 @@ function restoreData() {
 
 }
 
-function validateKey(input) {
+function replaceMultiplier(input) {
 
-    if(input === ','){
-        return '.';
-    }else if(input === 'x'){
-        return '*';
+    if(input === '*'){
+        return 'x';
     }else{
         return input;
     }
@@ -155,9 +182,9 @@ function reduceData (array,result) {
 // takes the storedValues string and splits it into an array, separating numbers and operators
 function organizeData () {
 
-    let operators = {'+':'|+|','-':'|-|','*':'|*|','/':'|/|'};
+    let operators = {'+':'|+|','-':'|-|','x':'|x|','/':'|/|'};
 
-    storedValues = storedValues.replace(/[+\-\*\/]/g, op => operators[op]);
+    storedValues = storedValues.replace(/[+\-\x\/]/g, op => operators[op]);
 
     return storedValues.split('|');
 
@@ -181,7 +208,7 @@ while(finalData.length>1){
             reduceData(finalData,+finalData[0] - +finalData[2]);          
         break;
 
-        case '*':
+        case 'x':
             reduceData(finalData,+finalData[0] * +finalData[2]);          
         break;
 
