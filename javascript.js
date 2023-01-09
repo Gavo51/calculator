@@ -1,13 +1,11 @@
 const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
 
-
 let storedValues = "";
-let operatorList = "+-*/";
-
 
 let triggerRefresh = false;         // flag variable to check if operate() has been called
 let disableOperators = false;       // flag variable to check if an operator has been inputted
+let disableDecimals = false;
 
 /*Add event listener for userInputboard inputs*/
 
@@ -21,29 +19,36 @@ let userInput = event.key;
         if(triggerRefresh){ 
             restoreData();
             triggerRefresh = false;
+            console.log('refreshing!');
         }
  
         storeValue(userInput);       
-        disableOperators = false;        
-    }
+        disableOperators = false;  
 
-    if(userInput == '.' || userInput == ','){
+    } else if ('.,'.includes(userInput)){
         
         if(triggerRefresh){ 
             restoreData();
             triggerRefresh = false;
+            console.log('refreshing!');
         }
 
-        if(storedValues == ''){
-            storeValue('0.');
-        } else {
-            storeValue('.');  
+        if(!disableDecimals){
+       
+            if(!storedValues.length || '+-/*'.includes(storedValues[storedValues.length-1])){
+                storeValue('0.');
+            } else {
+                storeValue('.');  
+            }
+
+            disableDecimals = true;        
+            disableOperators = false;  
+
         }
+
         
-        disableOperators = false;        
-    }
 
-    if('+-/*'.includes(userInput)){
+    } else if('+-/*'.includes(userInput)){
 
         triggerRefresh = false;
 
@@ -57,15 +62,13 @@ let userInput = event.key;
             }
 
         disableOperators = true;
+        disableDecimals = false;
 
         }       
-    }
-
-    if(userInput === 'Enter'){
-        operate();
-    } 
-
-    if(userInput === 'Backspace') {
+    } else if(userInput === 'Enter'){
+        operate();  
+     
+    } else if(userInput === 'Backspace') {
         deleteValue();
     }
 
@@ -157,6 +160,8 @@ function restoreData() {
 
     display.textContent = "";
     storedValues = "";
+    console.log('refreshing'); 
+    
 
 }
 
@@ -217,9 +222,12 @@ while(finalData.length>1){
         break;
     }
 
-    storedValues = finalData.toString();
+    storedValues = finalData.toString();   
     updateDisplay();
     triggerRefresh = true;
+    
+
+    console.log('result '+ finalData);
        
 };
 
