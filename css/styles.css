@@ -24,6 +24,7 @@
     border-radius: 5px;
     inline-size: 150px;
     min-height: 30px;
+    width:100%;
     overflow-wrap: break-word;   
     padding-top:5px;
 }
