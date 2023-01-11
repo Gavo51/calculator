@@ -1,5 +1,5 @@
-const display = document.querySelector(".display");
 const btnContainer = document.querySelector(".btn-container");
+const display = document.querySelector(".display");
 
 let storedValues = "";
 
@@ -11,53 +11,36 @@ window.addEventListener("keydown",function(event) {
 
 let userInput = event.key;
 
-    if(userInput >= 0 || userInput <= 9){
-        
-        // checking if operate() has been called
-        if(triggerRefresh){ 
-            restoreData();
-            triggerRefresh = false;
-        }
- 
+    if (userInput >= 0 || userInput <= 9){       
+        if (triggerRefresh) {
+            clearData();
+        }  
         storeValue(userInput);       
-
-    } else if ('.,'.includes(userInput)){
-        
-        if(triggerRefresh){ 
-            restoreData();
-            triggerRefresh = false;
+    } else if ('.,'.includes(userInput)){       
+        if (triggerRefresh) {
+            clearData();
         }
-
-        if(!disableDecimals){
-       
-            if(!storedValues || checkPreviousVal() == 'operator'){
+        if (!disableDecimals){      
+            if(!storedValues || operatorCheck()){
                 storeValue('0.');
             } else {
                 storeValue('.');  
             }
-            disableDecimals = true;        
+            disableDecimals = true;      
         }
-
     } else if ('+-/*'.includes(userInput)){
-
         triggerRefresh = false;
-
-        if(!!storedValues && checkPreviousVal() != 'operator') {
-        //Avoid operator inputs if there are no numbers or an operator has been introduced already
-            
-            if(userInput == '*'){
+        disableDecimals = false;
+        if (!!storedValues && !operatorCheck()) {        
+            if (userInput == '*'){
                 storeValue('x');
             } else {
             storeValue(userInput); 
-            }
-            disableDecimals = false;
-
+            }       
         }      
-
-    } else if(userInput === 'Enter'){
-        operate();  
-     
-    } else if(userInput === 'Backspace') {
+    } else if (userInput === 'Enter'){
+        operate();   
+    } else if (userInput === 'Backspace') {    
         deleteValue();
     }
 
@@ -72,95 +55,69 @@ btnContainer.addEventListener("mousedown", (event) => {
        switch(buttonType){
 
         case "digit-btn":
-
             if(triggerRefresh == true){ 
-                restoreData();
+                clearData();
                 triggerRefresh = false;
             }
-
-            storeValue(event.target.textContent);
-            updateDisplay();
-            
+            storeValue(event.target.textContent);           
             break;
-
         case "operator-btn":   
-
             triggerRefresh = false;
-
-            if(!!storedValues && checkPreviousVal() != 'operator') {
-                storeValue(event.target.textContent); 
-                disableDecimals = false;
+            disableDecimals = false;
+            if(!!storedValues && operatorCheck()) {
+                storeValue(event.target.textContent);                
             } 
-
             break;
-
         case "period-btn":
-
             if(triggerRefresh){ 
-                restoreData();
+                clearData();
                 triggerRefresh = false;
-            }
-    
-            if(!disableDecimals){
-           
-                if(!storedValues || checkPreviousVal() == 'operator'){
+            }  
+            if(!disableDecimals){           
+                if(!storedValues || operatorCheck()){
                     storeValue('0.');
                 } else {
                     storeValue('.');  
-                }
-    
-                disableDecimals = true;        
-   
+                }   
+                disableDecimals = true;          
             }
-
             break;
 
         case "equal-btn":
-
             operate();
             break;
-
-        case "clear-btn":
-            
-            restoreData();
-            break;
-        
+        case "clear-btn":            
+            clearData();
+            break;       
         case "delete-btn":
-
             deleteValue();
             break;
-
        }
     }
-
 })
 
 // Updates the display
 function updateDisplay(){
-
   display.textContent = storedValues;  
-
 }
 
 function storeValue (value) {
-
     storedValues += value;
     updateDisplay();
-    
+    return;
 }
 
 function deleteValue () {
-
+    if(storedValues[storedValues.length-1] == '.'){
+        disableDecimals = false;
+    }
     storedValues = storedValues.slice(0,storedValues.length-1);
-    triggerRefresh = false;
-    
+    triggerRefresh = false;   
     updateDisplay();
-
 }
 
 //Clears everything
-function restoreData() {
-
+function clearData() {
     display.textContent = "";
     storedValues = "";
     triggerRefresh = false;  
@@ -168,20 +125,18 @@ function restoreData() {
 
 }
 
-function checkPreviousVal(){
-
+function operatorCheck(){
     if('+-/*'.includes(storedValues[storedValues.length-1])){
-        return 'operator';
+        return true;
     } else {
-        return 'number';
+        return false;
     }
-
 }
 
-
+// takes storedValues and a operation function as arguments, then modify storedValues 
 function operateData (array,result) { 
-
-    array.splice(0,3);   // takes storedValues and a operation function as arguments, then modify storedValues 
+  
+    array.splice(0,3); 
     result = Math.round(result * 100) / 100;
     array.unshift(result.toString());
 
@@ -193,9 +148,7 @@ function operateData (array,result) {
 function organizeData () {
 
     let operators = {'+':'|+|','-':'|-|','x':'|x|','/':'|/|'};
-
     storedValues = storedValues.replace(/[+\-\x\/]/g, op => operators[op]);
-
     return storedValues.split('|');
 
 }
@@ -227,18 +180,14 @@ while(finalData.length>1){
         break;
     }
 
-    storedValues = finalData.toString();   
+    storedValues = finalData.toString();  
+    if(storedValues.includes('.')) disableDecimals = true; 
     updateDisplay();
     triggerRefresh = true;
-    
-
-    console.log('result '+ finalData);
        
 };
 
-
-
-    return ;
+return ;
 
 }
 
