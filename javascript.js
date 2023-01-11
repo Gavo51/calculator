@@ -3,11 +3,9 @@ const btnContainer = document.querySelector(".btn-container");
 
 let storedValues = "";
 
-let triggerRefresh = false;         // flag variable to check if operate() has been called
-let disableOperators = false;       // flag variable to check if an operator has been inputted
-let disableDecimals = false;
+let triggerRefresh = false;         // flag variable to check the screen should be refreshed after certain events
+let disableDecimals = false;        // flag variable to block decimals under certain conditions
 
-/*Add event listener for userInputboard inputs*/
 
 window.addEventListener("keydown",function(event) {
 
@@ -19,52 +17,43 @@ let userInput = event.key;
         if(triggerRefresh){ 
             restoreData();
             triggerRefresh = false;
-            console.log('refreshing!');
         }
  
         storeValue(userInput);       
-        disableOperators = false;  
 
     } else if ('.,'.includes(userInput)){
         
         if(triggerRefresh){ 
             restoreData();
             triggerRefresh = false;
-            console.log('refreshing!');
         }
 
         if(!disableDecimals){
        
-            if(!storedValues.length || '+-/*'.includes(storedValues[storedValues.length-1])){
+            if(!storedValues || checkPreviousVal() == 'operator'){
                 storeValue('0.');
             } else {
                 storeValue('.');  
             }
-
             disableDecimals = true;        
-            disableOperators = false;  
-
         }
 
-        
-
-    } else if('+-/*'.includes(userInput)){
+    } else if ('+-/*'.includes(userInput)){
 
         triggerRefresh = false;
 
-         // check if an operator userInput has been pressed twice
-        if(!disableOperators) {
-
+        if(!!storedValues && checkPreviousVal() != 'operator') {
+        //Avoid operator inputs if there are no numbers or an operator has been introduced already
+            
             if(userInput == '*'){
                 storeValue('x');
             } else {
             storeValue(userInput); 
             }
+            disableDecimals = false;
 
-        disableOperators = true;
-        disableDecimals = false;
+        }      
 
-        }       
     } else if(userInput === 'Enter'){
         operate();  
      
@@ -72,16 +61,12 @@ let userInput = event.key;
         deleteValue();
     }
 
-
-
 });
 
 
 /*Add click event  listener for all buttons the container*/
-btnContainer.addEventListener("click", (event) => {
-
-let userInput="";
-    
+btnContainer.addEventListener("mousedown", (event) => {
+   
     for(let buttonType of event.target.classList){
         
        switch(buttonType){
@@ -93,22 +78,40 @@ let userInput="";
                 triggerRefresh = false;
             }
 
-            userInput = event.target.textContent;
-            storeValue(userInput);
+            storeValue(event.target.textContent);
             updateDisplay();
-            disableOperators = false;
             
             break;
 
         case "operator-btn":   
 
-            userInput = validateuserInput(event.target.textContent);
             triggerRefresh = false;
 
-            if(!disableOperators) {
-                storeValue(userInput); 
-                disableOperators = true;
+            if(!!storedValues && checkPreviousVal() != 'operator') {
+                storeValue(event.target.textContent); 
+                disableDecimals = false;
             } 
+
+            break;
+
+        case "period-btn":
+
+            if(triggerRefresh){ 
+                restoreData();
+                triggerRefresh = false;
+            }
+    
+            if(!disableDecimals){
+           
+                if(!storedValues || checkPreviousVal() == 'operator'){
+                    storeValue('0.');
+                } else {
+                    storeValue('.');  
+                }
+    
+                disableDecimals = true;        
+   
+            }
 
             break;
 
@@ -118,7 +121,7 @@ let userInput="";
             break;
 
         case "clear-btn":
-
+            
             restoreData();
             break;
         
@@ -130,11 +133,9 @@ let userInput="";
        }
     }
 
-
-
 })
 
-// Updates the disppay
+// Updates the display
 function updateDisplay(){
 
   display.textContent = storedValues;  
@@ -151,6 +152,8 @@ function storeValue (value) {
 function deleteValue () {
 
     storedValues = storedValues.slice(0,storedValues.length-1);
+    triggerRefresh = false;
+    
     updateDisplay();
 
 }
@@ -160,24 +163,26 @@ function restoreData() {
 
     display.textContent = "";
     storedValues = "";
-    console.log('refreshing'); 
-    
+    triggerRefresh = false;  
+    disableDecimals = false;  
 
 }
 
-function replaceMultiplier(input) {
+function checkPreviousVal(){
 
-    if(input === '*'){
-        return 'x';
-    }else{
-        return input;
+    if('+-/*'.includes(storedValues[storedValues.length-1])){
+        return 'operator';
+    } else {
+        return 'number';
     }
 
 }
 
-function reduceData (array,result) { 
+
+function operateData (array,result) { 
 
     array.splice(0,3);   // takes storedValues and a operation function as arguments, then modify storedValues 
+    result = Math.round(result * 100) / 100;
     array.unshift(result.toString());
 
     return;
@@ -206,19 +211,19 @@ while(finalData.length>1){
 
     switch(finalData[1]){
         case '+':
-            reduceData(finalData,+finalData[0] + +finalData[2]);
+            operateData(finalData,+finalData[0] + +finalData[2]);
         break;
 
         case '-':
-            reduceData(finalData,+finalData[0] - +finalData[2]);          
+            operateData(finalData,+finalData[0] - +finalData[2]);          
         break;
 
         case 'x':
-            reduceData(finalData,+finalData[0] * +finalData[2]);          
+            operateData(finalData,+finalData[0] * +finalData[2]);          
         break;
 
         case '/':
-            reduceData(finalData,+finalData[0] / +finalData[2]);         
+            operateData(finalData,+finalData[0] / +finalData[2]);         
         break;
     }
 
