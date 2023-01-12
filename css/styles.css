@@ -1,72 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald&family=Roboto&display=swap');
+
 *{
     box-sizing: border-box;
     margin:0;
-    border:0;
-    font-size: 20px;
+    border:0; 
+    font-size: 23px;   
+    font-weight: 600;
+}
+
+body {
+    background-color: #A3A9F5;
+    font-family:'Roboto', sans-serif;
 }
 
 .container {
     display:flex;
     justify-content: center;
-    margin-top:200px;
+    margin-top:100px;
 }
 
 .main-body {
-    background-color: rgb(54, 54, 54);
-    padding:15px;
-    border:1px solid black;
-    border-radius: 5px;
-    box-shadow: 0px 0px 5px 2px;
+    background-color: #24303d;
 }
 
 .main-body .display {
-    background-color: white ;
-    border-radius: 5px;
-    inline-size: 150px;
-    min-height: 30px;
-    width:100%;
-    overflow-wrap: break-word;   
-    padding-top:5px;
+    font-size: 40px;  
+    min-height: 50px;
+    color:white;
+    width:250px;
+    padding:0 5px;
+    margin-top:20px;
+    overflow-wrap: break-word;     
 }
 
 .main-body .btn-container{
     margin-top:10px;
+    display:flex;   
+    flex-direction: column;
+
 }
 
 .main-body .row {
     display:flex;
 }
 
-.row:first-child .clear-btn,.delete-btn{
-  flex:1;
-  height:30px;
-  border:1px solid black;
-  border-radius:5px;
-  margin:1px;
-}
-
-
-
 .main-body .btn {
-    width:50px;
-    height:50px;   
+   flex:1;
+   height:60px;
+   color: white;
 }
 
-.clear-btn {
-    
-    
-    background-color: rgb(255, 36, 36);
+.main-body .digit-btn,.period-btn,.equal-btn {
+    background-color:#14151d;   
 }
 
-.equal-btn {
-    border:1px solid black;
-    border-radius:5px;
-    background-color: rgb(0, 177, 0);
+.operator-btn {
+    background-color:#0373ff;
 }
 
-.btn {
-    border: 1px solid black;
-    border-radius:5px;
-    margin:1px;
-    background-color: rgb(136, 136, 136);;
+.eraser-btn {
+    background-color: #0373ff;   
 }
+
+.btn:hover {
+    background-color:#212331;
+}
+
+.operator-btn:hover,.eraser-btn:hover{
+    background-color: #00469c;
+}
+
+.fa-delete-left,.clear-btn {
+    font-size:30px;
+}
+
+
+

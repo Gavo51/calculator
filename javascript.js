@@ -49,6 +49,8 @@ let userInput = event.key;
 
 /*Add click event  listener for all buttons the container*/
 btnContainer.addEventListener("mousedown", (event) => {
+
+console.log(event.target.classList);
    
     for(let buttonType of event.target.classList){
         
@@ -64,7 +66,7 @@ btnContainer.addEventListener("mousedown", (event) => {
         case "operator-btn":   
             triggerRefresh = false;
             disableDecimals = false;
-            if(!!storedValues && operatorCheck()) {
+            if(!!storedValues && !operatorCheck()) {
                 storeValue(event.target.textContent);                
             } 
             break;
